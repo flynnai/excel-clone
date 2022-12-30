@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./Cell.module.scss";
 
 const joinClasses = (...args) => args.filter(Boolean).join(" ");

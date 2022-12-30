@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./App.module.scss";
 import Spreadsheet from "./Spreadsheet";
 
 const spreadsheetDataTemplate = new Array(100).fill(0).map((_) =>
     new Array(26).fill(0).map((_) => ({
-        width: 30,
+        width: 60,
         height: null,
         contents: String("f"),
         selected: false,
@@ -44,7 +44,35 @@ function App() {
         }));
     };
 
-    return <Spreadsheet rows={spreadsheetData} handleClick={handleClick} />;
+    useEffect(() => {
+        const keyPressHandler = (e) => {
+            if (selection !== null) {
+                console.log(e.Key);
+            }
+        };
+        window.addEventListener("keypress", keyPressHandler);
+        return () => {
+            window.removeEventListener("keypress", keyPressHandler);
+        };
+    }, [selection]);
+
+    const handleCellInputChange = (e) => {
+        const [row, col] = selection;
+        updateSpreadsheet(row, col, (cell) => ({ contents: e.target.value }));
+    };
+
+    return (
+        <div className={styles.main}>
+            {selection && (
+                <input
+                    type="text"
+                    value={spreadsheetData[selection[0]][selection[1]].contents}
+                    onChange={handleCellInputChange}
+                ></input>
+            )}
+            <Spreadsheet rows={spreadsheetData} handleClick={handleClick} />
+        </div>
+    );
 }
 
 export default App;
