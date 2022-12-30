@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./App.module.scss";
 import Spreadsheet from "./Spreadsheet";
 
-const spreadsheetDataTemplate = new Array(100).fill(0).map((_) =>
-    new Array(26).fill(0).map((_) => ({
+const TABLE_WIDTH = 26;
+const TABLE_HEIGHT = 100;
+const spreadsheetDataTemplate = new Array(TABLE_HEIGHT).fill(0).map((_) =>
+    new Array(TABLE_WIDTH).fill(0).map((_) => ({
         width: 60,
         height: null,
         contents: String("f"),
@@ -16,6 +18,7 @@ function App() {
         spreadsheetDataTemplate
     );
     const [selection, setSelection] = useState(null);
+    const cellInputRef = useRef(null);
 
     const updateSpreadsheet = (rowNum, colNum, functor) => {
         setSpreadsheetData((curr) =>
@@ -30,6 +33,7 @@ function App() {
     };
 
     const handleClick = (row, col) => {
+        console.log("Handleclick: ", row, col);
         if (selection !== null) {
             const [oldRow, oldCol] = selection;
             updateSpreadsheet(oldRow, oldCol, (cell) => ({
@@ -45,20 +49,59 @@ function App() {
     };
 
     useEffect(() => {
-        const keyPressHandler = (e) => {
+        const keydownHandler = (e) => {
             if (selection !== null) {
-                console.log(e.Key);
+                const [row, col] = selection;
+                if (e.key === "ArrowUp") {
+                    if (row > 0) {
+                        e.preventDefault();
+                        handleClick(row - 1, col);
+                        cellInputRef.current.blur();
+                    }
+                } else if (e.key === "ArrowDown") {
+                    if (row < TABLE_HEIGHT) {
+                        e.preventDefault();
+                        handleClick(row + 1, col);
+                        cellInputRef.current.blur();
+                    }
+                } else if (e.key === "ArrowLeft") {
+                    if (col > 0) {
+                        e.preventDefault();
+                        handleClick(row, col - 1);
+                        cellInputRef.current.blur();
+                    }
+                } else if (e.key === "ArrowRight") {
+                    if (col < TABLE_WIDTH) {
+                        e.preventDefault();
+                        handleClick(row, col + 1);
+                        cellInputRef.current.blur();
+                    }
+                } else {
+                    console.log(e.key);
+                    if (document.activeElement !== cellInputRef.current) {
+                        // clear cell contents
+                        updateSpreadsheet(row, col, (cell) => ({
+                            ...cell,
+                            contents: "",
+                        }));
+                        cellInputRef.current.focus();
+                    }
+                }
+                console.log(e.key);
             }
         };
-        window.addEventListener("keypress", keyPressHandler);
+        window.addEventListener("keydown", keydownHandler);
         return () => {
-            window.removeEventListener("keypress", keyPressHandler);
+            window.removeEventListener("keydown", keydownHandler);
         };
     }, [selection]);
 
     const handleCellInputChange = (e) => {
         const [row, col] = selection;
-        updateSpreadsheet(row, col, (cell) => ({ contents: e.target.value }));
+        updateSpreadsheet(row, col, (cell) => ({
+            ...cell,
+            contents: e.target.value,
+        }));
     };
 
     return (
@@ -68,6 +111,7 @@ function App() {
                     type="text"
                     value={spreadsheetData[selection[0]][selection[1]].contents}
                     onChange={handleCellInputChange}
+                    ref={cellInputRef}
                 ></input>
             )}
             <Spreadsheet rows={spreadsheetData} handleClick={handleClick} />
