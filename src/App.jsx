@@ -76,10 +76,12 @@ function App() {
                         handleClick(row, col + 1);
                         cellInputRef.current.blur();
                     }
-                } else {
+                } else if (
+                    !["Meta", "Shift", "CapsLock", "Alt"].includes(e.key)
+                ) {
                     console.log(e.key);
+                    // if necessary, clear cell contents and focus input
                     if (document.activeElement !== cellInputRef.current) {
-                        // clear cell contents
                         updateSpreadsheet(row, col, (cell) => ({
                             ...cell,
                             contents: "",
