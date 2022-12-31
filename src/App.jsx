@@ -23,37 +23,21 @@ function App() {
             const [row, col] = focus;
             const { shiftKey } = e;
             if (e.key === "ArrowUp") {
-                if (row > 0) {
-                    e.preventDefault();
-                    dispatch(
-                        arrowKeyDown({ rowDelta: -1, colDelta: 0, shiftKey })
-                    );
-                    cellInputRef.current.blur();
-                }
+                e.preventDefault();
+                dispatch(arrowKeyDown({ rowDelta: -1, colDelta: 0, shiftKey }));
+                cellInputRef.current.blur();
             } else if (e.key === "ArrowDown") {
-                if (row < tableHeight) {
-                    e.preventDefault();
-                    dispatch(
-                        arrowKeyDown({ rowDelta: +1, colDelta: 0, shiftKey })
-                    );
-                    cellInputRef.current.blur();
-                }
+                e.preventDefault();
+                dispatch(arrowKeyDown({ rowDelta: +1, colDelta: 0, shiftKey }));
+                cellInputRef.current.blur();
             } else if (e.key === "ArrowLeft") {
-                if (col > 0) {
-                    e.preventDefault();
-                    dispatch(
-                        arrowKeyDown({ rowDelta: 0, colDelta: -1, shiftKey })
-                    );
-                    cellInputRef.current.blur();
-                }
+                e.preventDefault();
+                dispatch(arrowKeyDown({ rowDelta: 0, colDelta: -1, shiftKey }));
+                cellInputRef.current.blur();
             } else if (e.key === "ArrowRight") {
-                if (col < tableWidth) {
-                    e.preventDefault();
-                    dispatch(
-                        arrowKeyDown({ rowDelta: 0, colDelta: +1, shiftKey })
-                    );
-                    cellInputRef.current.blur();
-                }
+                e.preventDefault();
+                dispatch(arrowKeyDown({ rowDelta: 0, colDelta: +1, shiftKey }));
+                cellInputRef.current.blur();
             } else if (!["Meta", "Shift", "CapsLock", "Alt"].includes(e.key)) {
                 console.log(e.key);
                 // if necessary, clear cell contents and focus input

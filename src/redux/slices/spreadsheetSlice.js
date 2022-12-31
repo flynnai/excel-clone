@@ -20,6 +20,21 @@ export const addToSelection = (row, col, selection) =>
     (selection[getSelectionKey(row, col)] = [row, col]);
 export const removeFromSelection = (row, col, selection) =>
     delete selection[getSelectionKey(row, col)];
+export const addRangeSelection = (
+    startRow,
+    startCol,
+    endRow,
+    endCol,
+    selection
+) => {
+    if (startRow > endRow) [startRow, endRow] = [endRow, startRow];
+    if (startCol > endCol) [startCol, endCol] = [endCol, startCol];
+    for (let i = startRow; i <= endRow; i++) {
+        for (let j = startCol; j <= endCol; j++) {
+            addToSelection(i, j, selection);
+        }
+    }
+};
 
 export const spreadsheetSlice = createSlice({
     name: "spreadsheet",
@@ -67,26 +82,28 @@ export const spreadsheetSlice = createSlice({
                 if (state.lastShiftFocus === null) {
                     state.lastShiftFocus = [...state.focus];
                 }
-                state.lastShiftFocus[0] += rowDelta;
-                state.lastShiftFocus[1] += colDelta;
-                const [newRow, newCol] = state.lastShiftFocus;
+                let newRow = state.lastShiftFocus[0] + rowDelta;
+                let newCol = state.lastShiftFocus[1] + colDelta;
+                if (
+                    newRow < 0 ||
+                    newRow >= state.width ||
+                    newCol < 0 ||
+                    newCol >= state.height
+                ) {
+                    return;
+                }
 
                 // add all rows and columns from `focus` to `lastShiftFocus` to selection
+
                 const [focusRow, focusCol] = state.focus;
-                let [startRow, endRow] = [focusRow, newRow];
-                if (startRow > endRow) {
-                    [startRow, endRow] = [endRow, startRow];
-                }
-                let [startCol, endCol] = [focusCol, newCol];
-                if (startCol > endCol) {
-                    [startCol, endCol] = [endCol, startCol];
-                }
                 clearSelection(state.selection);
-                for (let i = startRow; i <= endRow; i++) {
-                    for (let j = startCol; j <= endCol; j++) {
-                        addToSelection(i, j, state.selection);
-                    }
-                }
+                addRangeSelection(
+                    focusRow,
+                    focusCol,
+                    newRow,
+                    newCol,
+                    state.selection
+                );
 
                 state.lastShiftFocus = [newRow, newCol];
             }
