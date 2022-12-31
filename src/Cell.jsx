@@ -5,10 +5,10 @@ import { cellClick } from "./redux/slices/spreadsheetSlice";
 
 const joinClasses = (...args) => args.filter(Boolean).join(" ");
 
-function Cell({ row, col }) {
+function Cell({ row, col, isSelected }) {
     console.log("Rerender");
     const entry = useSelector((state) => state.spreadsheet.rows[row][col]);
-    const { width, height, selected, contents } = entry;
+    const { width, height, contents } = entry;
     const dispatch = useDispatch();
 
     let cssWidth = width === null ? "auto" : `${width}px`;
@@ -24,7 +24,7 @@ function Cell({ row, col }) {
                 width: cssWidth,
                 height: cssHeight,
             }}
-            className={joinClasses(styles.main, selected && styles.selected)}
+            className={joinClasses(styles.main, isSelected && styles.selected)}
             onClick={onClick}
         >
             {contents}

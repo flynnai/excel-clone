@@ -17,13 +17,17 @@ export const spreadsheetSlice = createSlice({
         width: INIT_TABLE_WIDTH,
         height: INIT_TABLE_HEIGHT,
         rows: [...spreadsheetDataTemplate.map((row) => [...row])],
+        selection: {}, // pseudo-set of "row,col" strings
     },
     reducers: {
         // each uses "immer" under the hood
         cellClick: (state, action) => {
             const { row, col } = action.payload;
             console.log("Clicking with ", row, col);
-            state.rows[row][col].selected = true;
+            // TODO temp fix
+            const selected = Object.keys(state.selection)[0];
+            delete state.selection[selected];
+            state.selection[String([row, col])] = true;
         },
         decrement: (state) => {
             state.value -= 1;
