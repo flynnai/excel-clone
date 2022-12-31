@@ -27,18 +27,15 @@ export const spreadsheetSlice = createSlice({
             // TODO temp fix
             const selected = Object.keys(state.selection)[0];
             delete state.selection[selected];
-            state.selection[String([row, col])] = true;
+            state.selection[String([row, col])] = [row, col];
         },
-        decrement: (state) => {
-            state.value -= 1;
-        },
-        incrementByAmount: (state, action) => {
-            state.value += action.payload;
+        updateCell: (state, action) => {
+            const { row, col, updates } = action.payload;
+            state.rows[row][col] = { ...state.rows[row][col], ...updates };
         },
     },
 });
 
-export const { cellClick, decrement, incrementByAmount } =
-    spreadsheetSlice.actions;
+export const { cellClick, updateCell } = spreadsheetSlice.actions;
 
 export default spreadsheetSlice.reducer;
