@@ -12,6 +12,9 @@ function App() {
     const tableHeight = useSelector((state) => state.spreadsheet.height);
     const selection = useSelector((state) => state.spreadsheet.selection);
     const focus = useSelector((state) => state.spreadsheet.focus);
+    const lastShiftFocus = useSelector(
+        (state) => state.spreadsheet.lastShiftFocus
+    );
 
     const dispatch = useDispatch();
 
@@ -23,7 +26,7 @@ function App() {
                 if (row > 0) {
                     e.preventDefault();
                     dispatch(
-                        arrowKeyDown({ newRow: row - 1, newCol: col, shiftKey })
+                        arrowKeyDown({ rowDelta: -1, colDelta: 0, shiftKey })
                     );
                     cellInputRef.current.blur();
                 }
@@ -31,7 +34,7 @@ function App() {
                 if (row < tableHeight) {
                     e.preventDefault();
                     dispatch(
-                        arrowKeyDown({ newRow: row + 1, newCol: col, shiftKey })
+                        arrowKeyDown({ rowDelta: +1, colDelta: 0, shiftKey })
                     );
                     cellInputRef.current.blur();
                 }
@@ -39,7 +42,7 @@ function App() {
                 if (col > 0) {
                     e.preventDefault();
                     dispatch(
-                        arrowKeyDown({ newRow: row, newCol: col - 1, shiftKey })
+                        arrowKeyDown({ rowDelta: 0, colDelta: -1, shiftKey })
                     );
                     cellInputRef.current.blur();
                 }
@@ -47,7 +50,7 @@ function App() {
                 if (col < tableWidth) {
                     e.preventDefault();
                     dispatch(
-                        arrowKeyDown({ newRow: row, newCol: col + 1, shiftKey })
+                        arrowKeyDown({ rowDelta: 0, colDelta: +1, shiftKey })
                     );
                     cellInputRef.current.blur();
                 }
