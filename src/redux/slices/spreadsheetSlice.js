@@ -11,6 +11,9 @@ const spreadsheetDataTemplate = new Array(INIT_TABLE_HEIGHT).fill(0).map((_) =>
     }))
 );
 
+// helpers
+export const getSelectionKey = (row, col) => String([row, col]);
+
 export const spreadsheetSlice = createSlice({
     name: "spreadsheet",
     initialState: {
@@ -19,10 +22,6 @@ export const spreadsheetSlice = createSlice({
         rows: [...spreadsheetDataTemplate.map((row) => [...row])],
         selection: {}, // pseudo-set of "row,col" strings
         focus: [0, 0],
-        inputs: {
-            Shift: false,
-            Meta: false,
-        },
     },
     reducers: {
         // each uses "immer" under the hood
@@ -31,6 +30,7 @@ export const spreadsheetSlice = createSlice({
             console.log("Clicking with ", row, col);
             state.focus = [row, col];
             // TODO temp fix
+            state.selection = { [getSelectionKey(row, col)]: [row, col] };
             // const selected = Object.keys(state.selection)[0];
             // delete state.selection[selected];
             // state.selection[String([row, col])] = [row, col];
@@ -39,22 +39,18 @@ export const spreadsheetSlice = createSlice({
             const { row, col, updates } = action.payload;
             state.rows[row][col] = { ...state.rows[row][col], ...updates };
         },
-        keyDown: (state, action) => {
-            const { key } = action.payload;
-            if (key in state.inputs) {
-                state.inputs[key] = true;
-            }
-        },
-        keyUp: (state, action) => {
-            const { key } = action.payload;
-            if (key in state.inputs) {
-                state.inputs[key] = false;
+        arrowKeyDown: (state, action) => {
+            const { newRow, newCol, shiftKey } = action.payload;
+            if (!shiftKey) {
+                state.focus = [newRow, newCol];
+                state.selection = {
+                    [getSelectionKey(newRow, newCol)]: [newRow, newCol],
+                };
             }
         },
     },
 });
 
-export const { cellClick, updateCell, keyDown, keyUp } =
-    spreadsheetSlice.actions;
+export const { cellClick, updateCell, arrowKeyDown } = spreadsheetSlice.actions;
 
 export default spreadsheetSlice.reducer;

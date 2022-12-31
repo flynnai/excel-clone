@@ -1,6 +1,7 @@
 import styles from "./Spreadsheet.module.scss";
 import Cell from "./Cell";
 import { useSelector } from "react-redux";
+import { getSelectionKey } from "./redux/slices/spreadsheetSlice";
 
 function Spreadsheet() {
     const spreadsheetData = useSelector((state) => state.spreadsheet.rows);
@@ -15,7 +16,9 @@ function Spreadsheet() {
                         <Cell
                             row={rowNum}
                             col={colNum}
-                            isSelected={String([rowNum, colNum]) in selection}
+                            isSelected={
+                                getSelectionKey(rowNum, colNum) in selection
+                            }
                             isFocused={
                                 rowNum === focus[0] && colNum === focus[1]
                             }

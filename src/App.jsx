@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-    updateCell,
-    cellClick,
-    keyDown,
-    keyUp,
-} from "./redux/slices/spreadsheetSlice";
+import { arrowKeyDown, updateCell } from "./redux/slices/spreadsheetSlice";
 import styles from "./App.module.scss";
 import Spreadsheet from "./Spreadsheet";
 
@@ -17,36 +12,43 @@ function App() {
     const tableHeight = useSelector((state) => state.spreadsheet.height);
     const selection = useSelector((state) => state.spreadsheet.selection);
     const focus = useSelector((state) => state.spreadsheet.focus);
-    const inputs = useSelector((state) => state.spreadsheet.inputs);
-    console.log(inputs);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
         const keydownHandler = (e) => {
-            dispatch(keyDown({ key: e.key }));
             const [row, col] = focus;
+            const { shiftKey } = e;
             if (e.key === "ArrowUp") {
                 if (row > 0) {
                     e.preventDefault();
-                    // handleClick(row - 1, col);
+                    dispatch(
+                        arrowKeyDown({ newRow: row - 1, newCol: col, shiftKey })
+                    );
                     cellInputRef.current.blur();
                 }
             } else if (e.key === "ArrowDown") {
                 if (row < tableHeight) {
                     e.preventDefault();
-                    // handleClick(row + 1, col);
+                    dispatch(
+                        arrowKeyDown({ newRow: row + 1, newCol: col, shiftKey })
+                    );
                     cellInputRef.current.blur();
                 }
             } else if (e.key === "ArrowLeft") {
                 if (col > 0) {
                     e.preventDefault();
-                    // handleClick(row, col - 1);
+                    dispatch(
+                        arrowKeyDown({ newRow: row, newCol: col - 1, shiftKey })
+                    );
                     cellInputRef.current.blur();
                 }
             } else if (e.key === "ArrowRight") {
                 if (col < tableWidth) {
                     e.preventDefault();
-                    // handleClick(row, col + 1);
+                    dispatch(
+                        arrowKeyDown({ newRow: row, newCol: col + 1, shiftKey })
+                    );
                     cellInputRef.current.blur();
                 }
             } else if (!["Meta", "Shift", "CapsLock", "Alt"].includes(e.key)) {
@@ -63,11 +65,8 @@ function App() {
                     cellInputRef.current.focus();
                 }
             }
-            console.log(e.key);
         };
-        const keyupHandler = (e) => {
-            dispatch(keyUp({ key: e.key }));
-        };
+        const keyupHandler = (e) => {};
         window.addEventListener("keydown", keydownHandler);
         window.addEventListener("keyup", keyupHandler);
         return () => {
