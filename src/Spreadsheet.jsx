@@ -1,19 +1,16 @@
 import styles from "./Spreadsheet.module.scss";
 import Cell from "./Cell";
+import { useSelector } from "react-redux";
 
-function Spreadsheet({ rows, handleClick }) {
+function Spreadsheet() {
+    const spreadsheetData = useSelector((state) => state.spreadsheet.rows);
+
     return (
         <div className={styles.main}>
-            {rows.map((row, rowNum) => (
+            {spreadsheetData.map((row, rowNum) => (
                 <div className={styles.cellRow} key={rowNum}>
                     {row.map((entry, colNum) => (
-                        <Cell
-                            entry={entry}
-                            row={rowNum}
-                            col={colNum}
-                            key={colNum}
-                            handleClick={handleClick}
-                        />
+                        <Cell row={rowNum} col={colNum} key={colNum} />
                     ))}
                 </div>
             ))}

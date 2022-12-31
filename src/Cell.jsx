@@ -1,16 +1,21 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./Cell.module.scss";
+import { cellClick } from "./redux/slices/spreadsheetSlice";
 
 const joinClasses = (...args) => args.filter(Boolean).join(" ");
 
-function Cell({ entry, row, col, handleClick }) {
+function Cell({ row, col }) {
+    console.log("Rerender");
+    const entry = useSelector((state) => state.spreadsheet.rows[row][col]);
     const { width, height, selected, contents } = entry;
+    const dispatch = useDispatch();
 
     let cssWidth = width === null ? "auto" : `${width}px`;
     let cssHeight = height === null ? "auto" : `${height}px`;
 
     const onClick = () => {
-        handleClick(row, col);
+        dispatch(cellClick({ row, col }));
     };
 
     return (
@@ -27,4 +32,4 @@ function Cell({ entry, row, col, handleClick }) {
     );
 }
 
-export default Cell;
+export default React.memo(Cell);

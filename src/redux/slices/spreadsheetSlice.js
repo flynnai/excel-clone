@@ -1,17 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const INIT_TABLE_WIDTH = 26;
+const INIT_TABLE_HEIGHT = 100;
+const spreadsheetDataTemplate = new Array(INIT_TABLE_HEIGHT).fill(0).map((_) =>
+    new Array(INIT_TABLE_WIDTH).fill(0).map((_) => ({
+        width: 60,
+        height: null,
+        contents: String("f"),
+        selected: false,
+    }))
+);
+
 export const spreadsheetSlice = createSlice({
     name: "spreadsheet",
     initialState: {
-        value: 0,
+        width: INIT_TABLE_WIDTH,
+        height: INIT_TABLE_HEIGHT,
+        rows: [...spreadsheetDataTemplate.map((row) => [...row])],
     },
     reducers: {
-        increment: (state) => {
-            // Redux Toolkit allows us to write "mutating" logic in reducers. It
-            // doesn't actually mutate the state because it uses the Immer library,
-            // which detects changes to a "draft state" and produces a brand new
-            // immutable state based off those changes
-            state.value += 1;
+        // each uses "immer" under the hood
+        cellClick: (state, action) => {
+            const { row, col } = action.payload;
+            console.log("Clicking with ", row, col);
+            state.rows[row][col].selected = true;
         },
         decrement: (state) => {
             state.value -= 1;
@@ -22,7 +34,7 @@ export const spreadsheetSlice = createSlice({
     },
 });
 
-export const { increment, decrement, incrementByAmount } =
+export const { cellClick, decrement, incrementByAmount } =
     spreadsheetSlice.actions;
 
 export default spreadsheetSlice.reducer;
