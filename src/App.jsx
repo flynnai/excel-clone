@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateCell, cellClick } from "./redux/slices/spreadsheetSlice";
+import {
+    updateCell,
+    cellClick,
+    keyDown,
+    keyUp,
+} from "./redux/slices/spreadsheetSlice";
 import styles from "./App.module.scss";
 import Spreadsheet from "./Spreadsheet";
 
@@ -12,11 +17,13 @@ function App() {
     const tableHeight = useSelector((state) => state.spreadsheet.height);
     const selection = useSelector((state) => state.spreadsheet.selection);
     const focus = useSelector((state) => state.spreadsheet.focus);
-
+    const inputs = useSelector((state) => state.spreadsheet.inputs);
+    console.log(inputs);
     const dispatch = useDispatch();
 
     useEffect(() => {
         const keydownHandler = (e) => {
+            dispatch(keyDown({ key: e.key }));
             const [row, col] = focus;
             if (e.key === "ArrowUp") {
                 if (row > 0) {
@@ -58,9 +65,14 @@ function App() {
             }
             console.log(e.key);
         };
+        const keyupHandler = (e) => {
+            dispatch(keyUp({ key: e.key }));
+        };
         window.addEventListener("keydown", keydownHandler);
+        window.addEventListener("keyup", keyupHandler);
         return () => {
             window.removeEventListener("keydown", keydownHandler);
+            window.removeEventListener("keyup", keyupHandler);
         };
     }, [selection]);
 

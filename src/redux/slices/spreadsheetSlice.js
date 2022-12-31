@@ -19,6 +19,10 @@ export const spreadsheetSlice = createSlice({
         rows: [...spreadsheetDataTemplate.map((row) => [...row])],
         selection: {}, // pseudo-set of "row,col" strings
         focus: [0, 0],
+        inputs: {
+            Shift: false,
+            Meta: false,
+        },
     },
     reducers: {
         // each uses "immer" under the hood
@@ -35,9 +39,22 @@ export const spreadsheetSlice = createSlice({
             const { row, col, updates } = action.payload;
             state.rows[row][col] = { ...state.rows[row][col], ...updates };
         },
+        keyDown: (state, action) => {
+            const { key } = action.payload;
+            if (key in state.inputs) {
+                state.inputs[key] = true;
+            }
+        },
+        keyUp: (state, action) => {
+            const { key } = action.payload;
+            if (key in state.inputs) {
+                state.inputs[key] = false;
+            }
+        },
     },
 });
 
-export const { cellClick, updateCell } = spreadsheetSlice.actions;
+export const { cellClick, updateCell, keyDown, keyUp } =
+    spreadsheetSlice.actions;
 
 export default spreadsheetSlice.reducer;
