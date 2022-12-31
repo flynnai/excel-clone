@@ -1,7 +1,16 @@
 .main {
+    box-sizing: border-box;
     padding: 2px;
     border: 1px solid #c4c4c4;
+    z-index: 0;
+
     &.selected {
-        border: 1px solid blue;
+        outline: 1px solid blue;
+        z-index: 1;
+    }
+
+    &.focused {
+        outline: 2px solid blue;
+        z-index: 1;
     }
 }

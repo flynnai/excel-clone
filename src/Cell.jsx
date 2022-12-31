@@ -5,7 +5,7 @@ import { cellClick } from "./redux/slices/spreadsheetSlice";
 
 const joinClasses = (...args) => args.filter(Boolean).join(" ");
 
-function Cell({ row, col, isSelected }) {
+function Cell({ row, col, isSelected, isFocused }) {
     console.log("Rerender");
     const entry = useSelector((state) => state.spreadsheet.rows[row][col]);
     const { width, height, contents } = entry;
@@ -14,7 +14,8 @@ function Cell({ row, col, isSelected }) {
     let cssWidth = width === null ? "auto" : `${width}px`;
     let cssHeight = height === null ? "auto" : `${height}px`;
 
-    const onClick = () => {
+    const onMouseDown = (e) => {
+        console.log(e);
         dispatch(cellClick({ row, col }));
     };
 
@@ -24,8 +25,12 @@ function Cell({ row, col, isSelected }) {
                 width: cssWidth,
                 height: cssHeight,
             }}
-            className={joinClasses(styles.main, isSelected && styles.selected)}
-            onClick={onClick}
+            className={joinClasses(
+                styles.main,
+                isSelected && styles.selected,
+                isFocused && styles.focused
+            )}
+            onMouseDown={onMouseDown}
         >
             {contents}
         </div>
