@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { decrement, increment } from "./redux/slices/spreadsheetSlice";
 import styles from "./App.module.scss";
 import Spreadsheet from "./Spreadsheet";
 
@@ -20,6 +22,10 @@ function App() {
     const [selection, setSelection] = useState(null);
     const cellInputRef = useRef(null);
 
+    const count = useSelector((state) => state.spreadsheet.value);
+    const dispatch = useDispatch();
+    console.log("COUNT IS", count);
+
     const updateSpreadsheet = (rowNum, colNum, functor) => {
         setSpreadsheetData((curr) =>
             curr.map((row, currRowNum) =>
@@ -33,6 +39,7 @@ function App() {
     };
 
     const handleClick = (row, col) => {
+        dispatch(increment());
         console.log("Handleclick: ", row, col);
         if (selection !== null) {
             const [oldRow, oldCol] = selection;
